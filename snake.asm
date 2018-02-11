@@ -50,9 +50,28 @@
 	offsetSnake:   .space 104
 	currentItem:   .word 1
 	offsetItens:   .word 5144, 24600, 29748, 15460, 6240,, 8832, 27272,  27800, 8348, 10824, 23104, 20572, 3544, 8996, 2792, 30444, 29004, 7068, 18888, 16852, 11740, 26076, 26012, 6620, 14252, 18932, 24544, 25052, 11716, 10208, 9700
-		
+	.space 350
+	welcome: .asciiz "Welcome to the Snake Game\n"
+	menu: .asciiz "1 - Start |  0 - Exit\n"	
+
 								       
 .text
+	li $v0, 4
+	la $a0, welcome
+	syscall
+	li $v0, 4
+	la $a0, menu
+	syscall
+	li $v0 , 5		
+	syscall			
+
+	beq $v0, 0, exit
+	nop
+
+	
+
+
+go:
 	jal setColors
 	nop
 	jal defineSettings
