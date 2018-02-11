@@ -5,7 +5,7 @@
 #			Settings of Bitmap Display:                            #
 #		  Unit Width: 4       Display Width: 512                       #
 #		  Unit Height: 4      Display Height: 256		       #
-#	Use global data to base addres for display: 0x1000		       #
+#	Use global data to base address for display: 0x1000		       #
 # 	Use static data to save offset Snake and Itens: 0x1001		       #
 #------------------------------------------------------------------------------#		  	
 #			 Others informations:				       #						  	
@@ -115,7 +115,7 @@ defineSettings:
 #------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
-#			Function to define de Background		       #	
+#			Function to define the Background		       #	
 defineMap:
 	beq $t0, 32764, endDefineMap	# Count ? 32764; 
 	nop
@@ -194,11 +194,11 @@ bCreate:beq $t0, $t3, endCreate	  # Count ? Parts of Snake
 		sw $s1, 0($t1)    # Print with White Color
 		add $t2, $t2, 4	  # Adress Array += 4;
 		addi $t0, $t0, 1  # Count += 1;
-		lui $t1, 0x1000   # Reset Addres of Map
+		lui $t1, 0x1000   # Reset Address of Map
 		j bCreate
 		nop
 endCreate:
-	lui $t1, 0x1000		  # Reset Addres of Map
+	lui $t1, 0x1000		  # Reset Address of Map
 	lui $t2, 0x1001		  # Reset Address of Array
 	move $t0, $0		  # Reset Count
 	jr $31			  # Return
@@ -297,7 +297,7 @@ checkBorderCollision:			#
 	addi $t9, $0, 1540		# T9 the values of Left Column
 cBorderL:	beq $t9, 31236, checkRight	# If T9 is equal a last value of left column, go checkRight
 	nop
-		beq $t7, $t9, gameOver	# If the Previous Moviment is equal a one value of Left Column, gameOver
+		beq $t7, $t9, gameOver	# If the next Moviment is equal a one value of Left Column, gameOver
 		nop
 		addi $t9, $t9, 512	# T9 - Go to the next value of column
 		j cBorderL	        # Return loop
@@ -308,9 +308,9 @@ checkRight:
 	move $t9, $0			# Reset T9
 
 	addi $t9, $0, 1528		# T9 the values of Right Column
-cBorderR:beq $t9, 31736, continue	# If T9 is equal a last value of right column, go tag continue
+cBorderR:beq $t9, 31736, continue	# If T9 is equal a last value of right column, go to the label continue
 	nop
-		beq $t7, $t9, gameOver	# If Previous moviment is equal a one value of Right Column, gameOver
+		beq $t7, $t9, gameOver	# If next moviment is equal a one value of Right Column, gameOver
 		nop
 		addi $t9, $t9, 512	# T9 - Go to the next value of column	
 		j cBorderR	        # Return loop
@@ -338,7 +338,7 @@ bPartOfSnake:
 	beq $t0, $t3, endCheckSnake	# If Size of Snake is qual Count, go endCheckSnake	
 	nop
 	     	lw $t5, 0($t2)	  	# Load offset of one part of snake
-		beq $t5, $t7, gameOver  # If possible moviment is equal to a part of Snake gam
+		beq $t5, $t7, gameOver  # If next moviment is equal to a part of Snake
 		nop	
 		addi $t2, $t2, 4	# Array++;
 		addi $t0, $t0, 1	# Count++;
@@ -358,8 +358,8 @@ endCheckSnake:
 #------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
 # 			Check Item Collision				       #
-checkItemCollision:			# Check if the next moviment of snake gonna collision with item
-	beq $t7, $k1, collisionOn	# If collision, go collisionOn to check where gonna create a new part of snake: up, down, left, right
+checkItemCollision:			# Check if the next moviment of snake can collision with item
+	beq $t7, $k1, collisionOn	# If collision, go collisionOn to check where will create a new part of snake: up, down, left, right
 	nop
 	j bItem
 	nop
@@ -412,7 +412,7 @@ collisionOn:
 			sw $t4, 124($t2)	# Update currentItem;
 			sll $s6, $t3, 2	 	# S6 - New offset of new tail
 			add $s6, $t2, $s6	# S6 - Calculate a last postion of address array(Adress array + offset)
-			sw $s7,0($s6)		# S7 - Save a part of snae(s7) into last position of array
+			sw $s7,0($s6)		# S7 - Save a part of snake(s7) into last position of array
 			j endCollisionOn	
 			nop
 endCollisionOn:
@@ -481,14 +481,14 @@ recreateSnake:
 bRecreate:beq $t0, $t3, endRecreate
 	  nop
 		lw $t5, 0($t2)	  # Load offset - one part of snake
-		add $t5, $t5, $t1 # Add ofsset to Address Map
+		add $t5, $t5, $t1 # Add offsset to Address Map
 		sw $s1, 0($t5)    # Print with White Color
-		add $t2, $t2, 4	  # Adress Array ++;
+		add $t2, $t2, 4	  # Address Array ++;
 		addi $t0, $t0, 1  # Count++;
 		j bRecreate
 		nop
 endRecreate:
-	lui $t2, 0x1001		# Reset Addres of Array
+	lui $t2, 0x1001		# Reset Address of Array
 	move $t0, $0		# Reset Count
 	lui $t2, 0x1001			# Reset address array
 	move $t0, $0			# Reset Count
@@ -501,7 +501,7 @@ endRecreate:
 #------------------------------------------------------------------------------#
 #				Create Itens				       #
 createFirstItem:
-	addi $t2, $t2, 124	# Addres to Current item
+	addi $t2, $t2, 124	# Address to Current item
 	lw $t4, 0($t2)		# Load CurrentItem
 	sll $s7, $t4, 2		# Multiply number of current item * 4 to get the offset
 	add $t2, $t2, $s7
