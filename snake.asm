@@ -318,17 +318,9 @@ endCheckSnake:
 #------------------------------------------------------------------------------#
 # 			Check Item Collision				       #
 checkItemCollision:			# Check if the next moviment of snake gonna collision with item
-	beq $t7, 5144, collisionOn	# If collision, go collisionOn to check where gonna create a new part of snake: up, down, left, right
+	beq $t7, $k1, collisionOn	# If collision, go collisionOn to check where gonna create a new part of snake: up, down, left, right
 	nop
-	beq $t7, 5656, collisionOn
-	nop
-	beq $t7, 3208, collisionOn
-	nop
-	beq $t7, 18560, collisionOn
-	nop
-	beq $t7, 29204, collisionOn
-	nop
-	j endCollisionOn
+	j bItem
 	nop
 
 collisionOn:
@@ -378,14 +370,56 @@ collisionOn:
 			j endCollisionOn	
 			nop
 endCollisionOn:
-	beq $t3, 5, createItem2
+	beq $t3, 2, createItem2
 	nop
-	beq $t3, 6, createItem3
+	beq $t3, 3, createItem3
 	nop
-	beq $t3, 7, createItem4
-	nop	
-	beq $t3, 8, createItem5
+	beq $t3, 4, createItem4
 	nop
+	beq $t3, 5, createItem5
+	nop
+	beq $t3, 6, createItem6
+	nop
+	beq $t3, 7, createItem7
+	nop
+	beq $t3, 8, createItem8
+	nop
+	beq $t3, 9, createItem9
+	nop
+	beq $t3, 10, createItem10
+	nop
+	beq $t3, 11, createItem11
+	nop
+	beq $t3, 12, createItem12
+	nop
+	beq $t3, 13, createItem13
+	nop
+	beq $t3, 14, createItem14
+	nop
+	beq $t3, 15, createItem15
+	nop
+	beq $t3, 16, createItem16
+	nop
+	beq $t3, 17, createItem17
+	nop
+	beq $t3, 18, createItem2
+	nop
+	beq $t3, 19, createItem19
+	nop
+	beq $t3, 20, createItem20
+	nop
+	beq $t3, 21, createItem21
+	nop
+	beq $t3, 22, createItem22
+	nop
+	beq $t3, 23, createItem23
+	nop
+	beq $t3, 24, createItem24
+	nop
+	beq $t3, 25, createItem25
+	nop
+
+
 	
 bItem:	
 	lui $t1, 0x1000			# Reset address map
@@ -456,22 +490,25 @@ endRecreate:
 #------------------------------------------------------------------------------#
 #				Create Itens				       #
 createItem1:
-	addi $t1, $t1, 5144
+	addi $t1, $t1, 10800
+	li $k1, 10800
 	sw $s1, 0($t1)
-	lui $t1, 0x1000
+	lui $t1, 0x1000	
 	jr $31
 	nop
 #------------------------------------------------------------------------------#
 createItem2:		
-	addi $t1, $t1, 39204
+	addi $t1, $t1, 17960
+	li $k1, 17960
 	sw $s1, 0($t1)
 	lui $t1, 0x1000
 	j bItem
-	nop
+	nop	
 
 #------------------------------------------------------------------------------#
 createItem3:
-	addi $t1, $t1, 3208
+	addi $t1, $t1, 17464
+	li $k1, 17464
 	sw $s1, 0($t1)
 	lui $t1, 0x1000
 	j bItem
@@ -479,7 +516,8 @@ createItem3:
 
 #------------------------------------------------------------------------------#
 createItem4:
-	addi $t1, $t1, 18560
+	addi $t1, $t1, 27164
+	li $k1, 27164
 	sw $s1, 0($t1)
 	lui $t1, 0x1000
 	j bItem
@@ -487,11 +525,174 @@ createItem4:
 
 #------------------------------------------------------------------------------#
 createItem5:
-	addi $t1, $t1, 29204
+	addi $t1, $t1, 18004
+	li $k1, 18004
 	sw $s1, 0($t1)
 	lui $t1, 0x1000
 	j bItem
 	nop
+#------------------------------------------------------------------------------#
+createItem6:
+	addi $t1, $t1, 28260
+	li $k1, 28260
+	sw $s1, 0($t1)
+	lui $t1, 0x1000
+	j bItem
+	nop
+#------------------------------------------------------------------------------#
+createItem7:
+	addi $t1, $t1, 17008
+	li $k1, 17008
+	sw $s1, 0($t1)
+	lui $t1, 0x1000
+	j bItem
+	nop
+#------------------------------------------------------------------------------#
+createItem8:
+	addi $t1, $t1, 8820
+	li $k1, 8820
+	sw $s1, 0($t1)
+	lui $t1, 0x1000
+	j bItem
+	nop
+#------------------------------------------------------------------------------#
+createItem9:
+	addi $t1, $t1, 27304
+	li $k1, 27304
+	sw $s1, 0($t1)
+	lui $t1, 0x1000
+	j bItem
+	nop
+#------------------------------------------------------------------------------#
+createItem10:
+	addi $t1, $t1, 6876
+	li $k1, 6876
+	sw $s1, 0($t1)
+	lui $t1, 0x1000
+	j bItem
+	nop
+#------------------------------------------------------------------------------#
+createItem11:
+	addi $t1, $t1, 25824
+	li $k1, 25824
+	sw $s1, 0($t1)
+	lui $t1, 0x1000
+	j bItem
+	nop
+#------------------------------------------------------------------------------#
+createItem12:
+	addi $t1, $t1, 7500
+	li $k1, 7500
+	sw $s1, 0($t1)
+	lui $t1, 0x1000
+	j bItem
+	nop
+#------------------------------------------------------------------------------#
+createItem13:
+	addi $t1, $t1, 2864
+	li $k1, 2864
+	sw $s1, 0($t1)
+	lui $t1, 0x1000
+	j bItem
+	nop
+#------------------------------------------------------------------------------#
+createItem14:
+	addi $t1, $t1, 23376
+	li $k1, 23376
+	sw $s1, 0($t1)
+	lui $t1, 0x1000
+	j bItem
+	nop
+#------------------------------------------------------------------------------#
+createItem15:
+	addi $t1, $t1, 18308
+	li $k1, 18308
+	sw $s1, 0($t1)
+	lui $t1, 0x1000
+	j bItem
+	nop
+#------------------------------------------------------------------------------#
+createItem16:
+	addi $t1, $t1, 18004
+	li $k1, 18004
+	sw $s1, 0($t1)
+	lui $t1, 0x1000
+	j bItem
+	nop
+#------------------------------------------------------------------------------#
+createItem17:
+	addi $t1, $t1, 19880
+	li $k1, 19880
+	sw $s1, 0($t1)
+	lui $t1, 0x1000
+	j bItem
+	nop
+#------------------------------------------------------------------------------#
+createItem18:
+	addi $t1, $t1, 7092
+	li $k1, 7092
+	sw $s1, 0($t1)
+	lui $t1, 0x1000
+	j bItem
+	nop
+#------------------------------------------------------------------------------#
+createItem19:
+	addi $t1, $t1, 22464
+	li $k1, 22464
+	sw $s1, 0($t1)
+	lui $t1, 0x1000
+	j bItem
+	nop
+#------------------------------------------------------------------------------#
+createItem20:
+	addi $t1, $t1, 28636
+	li $k1, 28636
+	sw $s1, 0($t1)
+	lui $t1, 0x1000
+	j bItem
+	nop
+#------------------------------------------------------------------------------#
+createItem21:
+	addi $t1, $t1, 15840
+	li $k1, 15840
+	sw $s1, 0($t1)
+	lui $t1, 0x1000
+	j bItem
+	nop
+#------------------------------------------------------------------------------#
+createItem22:
+	addi $t1, $t1, 28636
+	li $k1, 28636
+	sw $s1, 0($t1)
+	lui $t1, 0x1000
+	j bItem
+	nop
+#------------------------------------------------------------------------------#
+createItem23:
+	addi $t1, $t1, 7092
+	li $k1, 7092
+	sw $s1, 0($t1)
+	lui $t1, 0x1000
+	j bItem
+	nop
+#------------------------------------------------------------------------------#
+createItem24:
+	addi $t1, $t1, 25824
+	li $k1, 25824
+	sw $s1, 0($t1)
+	lui $t1, 0x1000
+	j bItem
+	nop
+#------------------------------------------------------------------------------#
+createItem25:
+	addi $t1, $t1, 17960
+	li $k1, 17960
+	sw $s1, 0($t1)
+	lui $t1, 0x1000
+	j bItem
+	nop
+
+
 
 #------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
