@@ -15,26 +15,26 @@
 #------------------------------------------------------------------------------#
 #			 Registers:					      	
 # T0 - Count					
-# T0(Border Collision)	- the values of column(left or right)
-# T1 - Address Map - 0x1000			
-# T2 - Adress Array of Snake - 0x1001		
-# T3 - Size of Snake				
-# T4 - Parts of Snake				
-# T5 - Address to save part of snake		
-# T6 - Quantity of Pixels to Moviment
-# T7 - Snake's Born /  Previous Moviment
-# T9 - Border Collision - Flag to Slti
+
 # T9 - Border Collision - the values of column(left or right)
 # S0 - Black
 # S1 - White
 # S2 - Gray
 # S3 - Dark Red
- 
+
+# sizeSnake = +0
+# offsetSnake +4...
+# currentItem = +124
+# offsetItem = +128...
 #------------------------------------------------------------------------------#
 #			Call the Functions				       #
 .data
-	sizeSnake: .word 4
-	partsOfSnake: .word 13060, 13572, 14084, 14596
+	sizeSnake:     .word 4
+	partsofSnake:  .word 13060, 13572, 14084, 14596
+	offsetSnake:   .space 104
+	currentItem:   .word 1
+	offsetItens:   .word 5144, 24600, 29748, 15460, 6240,, 8832, 27272,  27800, 8348, 10824, 23104, 20572, 3544, 8996, 2792, 30444, 29004, 7068, 18888, 16852, 11740, 26076, 26012, 6620, 14252, 18932, 24544, 25052, 11716, 10208, 9700
+		
 								       
 .text
 	jal setColors
@@ -45,11 +45,10 @@
 	nop
 	jal createSnake
 	nop
-	jal createItem1
+	jal createFirstItem
 	nop
 	jal readKeyPress
 	nop
-	
 	j exit
 	nop
 #------------------------------------------------------------------------------#
@@ -74,7 +73,9 @@ defineSettings:
 	lui $t1, 0x1000 	# Set Address Map
 	lui $t2, 0x1001		# Set Address Snake
 	lw $t3, 0($t2)		# Size of Snake
+	lw $t4, 124($t2)	# CurrentItem
 	li $t7, 13060		# Snake's Born
+	
 #------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
@@ -153,14 +154,16 @@ createSnake:
 
 bCreate:beq $t0, $t3, endCreate	  # Count ? Parts of Snake
 	nop
-		lw $t4, 0($t2)	  # Load Pixel - one part of snake
-		add $t5, $t4, $t1 # Add Pixel Snake to Address Map
-		sw $s1, 0($t5)    # Print with White Color
+		lw $t5, 0($t2)	  # Load Pixel - one part of snake
+		add $t1, $t1, $t5 # Add Pixel Snake to Address Map
+		sw $s1, 0($t1)    # Print with White Color
 		add $t2, $t2, 4	  # Adress Array += 4;
 		addi $t0, $t0, 1  # Count += 1;
+		lui $t1, 0x1000   # Reset Addres of Map
 		j bCreate
 		nop
 endCreate:
+	lui $t1, 0x1000		  # Reset Addres of Map
 	lui $t2, 0x1001		  # Reset Address of Array
 	move $t0, $0		  # Reset Count
 	jr $31			  # Return
@@ -281,6 +284,8 @@ cBorderR:beq $t9, 31736, continue	# If T9 is equal a last value of right column,
 
 	# No collision, so continue
 continue:
+	lui $t1, 0x1000
+	lui $t2, 0x1001
 	move $t9, $0			# Reset T9
 	j gC1				# Return
 	nop
@@ -297,14 +302,15 @@ checkSnakeCollision:
 bPartOfSnake:
 	beq $t0, $t3, endCheckSnake	# If Size of Snake is qual Count, go endCheckSnake	
 	nop
-	     	lw $t4, 0($t2)	  	# Load Pixel of one part of snake
-		beq $t4, $t7, gameOver  # If possible moviment is equal to a part of Snake game over
+	     	lw $t5, 0($t2)	  	# Load offset of one part of snake
+		beq $t5, $t7, gameOver  # If possible moviment is equal to a part of Snake gam
 		nop	
 		addi $t2, $t2, 4	# Array++;
 		addi $t0, $t0, 1	# Count++;
 		j bPartOfSnake
 		nop
 endCheckSnake:
+	lui $t1, 0x1000
 	lui $t2, 0x1001			# Reset address array
 	move $t0, $0			# Reset Count
 	j gC2  				# Return 
@@ -324,6 +330,7 @@ checkItemCollision:			# Check if the next moviment of snake gonna collision with
 	nop
 
 collisionOn:
+	li $k0, 999
 	move $s7, $0		# Zera S7
 	sll $s7, $t3, 2		# S7 - Get the offset to last position of array
 	add $s7, $s7, $t2	# S7 - Get the address of last position (Address Array + Offset)
@@ -364,61 +371,19 @@ collisionOn:
 			add $s7, $t9, $s4	# S7 - Value o new part
 			addi $t3, $t3, 1	# Size Snake ++;
 			sw $t3, 0($t2)		# Update Size of Snake
+			addi $t4, $t4, 1	# currentItem ++;
+			beq $t4, 25, Vitoria
+			nop
+			sw $t4, 124($t2)	# Update currentItem;
 			sll $s6, $t3, 2	 	# S6 - New offset of new tail
 			add $s6, $t2, $s6	# S6 - Calculate a last postion of address array(Adress array + offset)
 			sw $s7,0($s6)		# S7 - Save a part of snae(s7) into last position of array
 			j endCollisionOn	
 			nop
 endCollisionOn:
-	beq $t3, 2, createItem2
+	j createItens
 	nop
-	beq $t3, 3, createItem3
-	nop
-	beq $t3, 4, createItem4
-	nop
-	beq $t3, 5, createItem5
-	nop
-	beq $t3, 6, createItem6
-	nop
-	beq $t3, 7, createItem7
-	nop
-	beq $t3, 8, createItem8
-	nop
-	beq $t3, 9, createItem9
-	nop
-	beq $t3, 10, createItem10
-	nop
-	beq $t3, 11, createItem11
-	nop
-	beq $t3, 12, createItem12
-	nop
-	beq $t3, 13, createItem13
-	nop
-	beq $t3, 14, createItem14
-	nop
-	beq $t3, 15, createItem15
-	nop
-	beq $t3, 16, createItem16
-	nop
-	beq $t3, 17, createItem17
-	nop
-	beq $t3, 18, createItem2
-	nop
-	beq $t3, 19, createItem19
-	nop
-	beq $t3, 20, createItem20
-	nop
-	beq $t3, 21, createItem21
-	nop
-	beq $t3, 22, createItem22
-	nop
-	beq $t3, 23, createItem23
-	nop
-	beq $t3, 24, createItem24
-	nop
-	beq $t3, 25, createItem25
-	nop
-
+	
 
 	
 bItem:	
@@ -427,22 +392,30 @@ bItem:
 	move $t0, $0			# Reset Count
 	j gC3				# Return 
 	nop
+
+
+
+#------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
 inputNewPosition:
-	addi $s6, $t3, -2	# Size of Snake Flexible to make a loop
 	sll $s4, $t3, 2		# x = Size * 4	= Last Position
-	addi $s5, $s4, -4	# y = x - 4	= Last Position - 1
 	add $t9, $t2, $s4	# Load address of last position
+
+	addi $s5, $s4, -4	# y = x - 4	= Last Position - 1
 	add $t8, $t2, $s5	# Load address of last position - 1
-	lw $s7, 0($t8)		# Save lastPosition-1 into lastPosition
-	lw $t5, 0($t9)
-	add $t5, $t1, $t5
-	sw $s2, 0($t5)
-	sw $s7, 0($t9)
-	bInput:	beq $t0, $s6, endInput
+	
+	lw $s7, 0($t8)		# Load offset of last position -1
+	lw $t5, 0($t9)		# Load offset of last position
+	add $t5, $t1, $t5	# Add offset of last position to address map to transform to gray color
+	sw $s2, 0($t5)		# Gray color
+	sw $s7, 0($t9)		# Change the offset the lastpostion-1 into lastposition to make a illusion to snake walk
+
+	addi $s6, $t3, -2	# Size of Snake Flexible to make a loop
+	bInput:	beq $t0, $s6, endInput	
 		nop	
 			addi $t8, $t8, -4
 				addi $t9, $t9, -4
@@ -453,7 +426,9 @@ inputNewPosition:
 			nop
 	endInput: 
 	move $t0, $0
-	sw $t7, 0($t8)
+	move $t5, $0
+
+	sw $t7, 0($t8)			# Save new moviment in last
 	lui $t2, 0x1001			# Reset address array
 	move $t0, $0			# Reset Count
 	j gC4				# Return 
@@ -465,15 +440,16 @@ inputNewPosition:
 #------------------------------------------------------------------------------#		
 #			reCreate Snake					       #
 recreateSnake:
+	lui $t2, 0x1001
 	addi $t2, $t2, 4 # Jump	Position: Size of Snakee
 
 bRecreate:beq $t0, $t3, endRecreate
-	nop
-		lw $t4, 0($t2)	  # Load Pixel - one part of snake
-		add $t5, $t4, $t1 # Add Pixel Snake to Address Map
+	  nop
+		lw $t5, 0($t2)	  # Load offset - one part of snake
+		add $t5, $t5, $t1 # Add ofsset to Address Map
 		sw $s1, 0($t5)    # Print with White Color
 		add $t2, $t2, 4	  # Adress Array ++;
-		addi $t0, $t0, 1
+		addi $t0, $t0, 1  # Count++;
 		j bRecreate
 		nop
 endRecreate:
@@ -489,210 +465,48 @@ endRecreate:
 #------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
 #				Create Itens				       #
-createItem1:
-	addi $t1, $t1, 10800
-	li $k1, 10800
-	sw $s1, 0($t1)
-	lui $t1, 0x1000	
-	jr $31
-	nop
-#------------------------------------------------------------------------------#
-createItem2:		
-	addi $t1, $t1, 17960
-	li $k1, 17960
-	sw $s1, 0($t1)
-	lui $t1, 0x1000
-	j bItem
-	nop	
-
-#------------------------------------------------------------------------------#
-createItem3:
-	addi $t1, $t1, 17464
-	li $k1, 17464
-	sw $s1, 0($t1)
-	lui $t1, 0x1000
-	j bItem
-	nop
-
-#------------------------------------------------------------------------------#
-createItem4:
-	addi $t1, $t1, 27164
-	li $k1, 27164
-	sw $s1, 0($t1)
-	lui $t1, 0x1000
-	j bItem
-	nop
-
-#------------------------------------------------------------------------------#
-createItem5:
-	addi $t1, $t1, 18004
-	li $k1, 18004
-	sw $s1, 0($t1)
-	lui $t1, 0x1000
-	j bItem
-	nop
-#------------------------------------------------------------------------------#
-createItem6:
-	addi $t1, $t1, 28260
-	li $k1, 28260
-	sw $s1, 0($t1)
-	lui $t1, 0x1000
-	j bItem
-	nop
-#------------------------------------------------------------------------------#
-createItem7:
-	addi $t1, $t1, 17008
-	li $k1, 17008
-	sw $s1, 0($t1)
-	lui $t1, 0x1000
-	j bItem
-	nop
-#------------------------------------------------------------------------------#
-createItem8:
-	addi $t1, $t1, 8820
-	li $k1, 8820
-	sw $s1, 0($t1)
-	lui $t1, 0x1000
-	j bItem
-	nop
-#------------------------------------------------------------------------------#
-createItem9:
-	addi $t1, $t1, 27304
-	li $k1, 27304
-	sw $s1, 0($t1)
-	lui $t1, 0x1000
-	j bItem
-	nop
-#------------------------------------------------------------------------------#
-createItem10:
-	addi $t1, $t1, 6876
-	li $k1, 6876
-	sw $s1, 0($t1)
-	lui $t1, 0x1000
-	j bItem
-	nop
-#------------------------------------------------------------------------------#
-createItem11:
-	addi $t1, $t1, 25824
-	li $k1, 25824
-	sw $s1, 0($t1)
-	lui $t1, 0x1000
-	j bItem
-	nop
-#------------------------------------------------------------------------------#
-createItem12:
-	addi $t1, $t1, 7500
-	li $k1, 7500
-	sw $s1, 0($t1)
-	lui $t1, 0x1000
-	j bItem
-	nop
-#------------------------------------------------------------------------------#
-createItem13:
-	addi $t1, $t1, 2864
-	li $k1, 2864
-	sw $s1, 0($t1)
-	lui $t1, 0x1000
-	j bItem
-	nop
-#------------------------------------------------------------------------------#
-createItem14:
-	addi $t1, $t1, 23376
-	li $k1, 23376
-	sw $s1, 0($t1)
-	lui $t1, 0x1000
-	j bItem
-	nop
-#------------------------------------------------------------------------------#
-createItem15:
-	addi $t1, $t1, 18308
-	li $k1, 18308
-	sw $s1, 0($t1)
-	lui $t1, 0x1000
-	j bItem
-	nop
-#------------------------------------------------------------------------------#
-createItem16:
-	addi $t1, $t1, 18004
-	li $k1, 18004
-	sw $s1, 0($t1)
-	lui $t1, 0x1000
-	j bItem
-	nop
-#------------------------------------------------------------------------------#
-createItem17:
-	addi $t1, $t1, 19880
-	li $k1, 19880
-	sw $s1, 0($t1)
-	lui $t1, 0x1000
-	j bItem
-	nop
-#------------------------------------------------------------------------------#
-createItem18:
-	addi $t1, $t1, 7092
-	li $k1, 7092
-	sw $s1, 0($t1)
-	lui $t1, 0x1000
-	j bItem
-	nop
-#------------------------------------------------------------------------------#
-createItem19:
-	addi $t1, $t1, 22464
-	li $k1, 22464
-	sw $s1, 0($t1)
-	lui $t1, 0x1000
-	j bItem
-	nop
-#------------------------------------------------------------------------------#
-createItem20:
-	addi $t1, $t1, 28636
-	li $k1, 28636
-	sw $s1, 0($t1)
-	lui $t1, 0x1000
-	j bItem
-	nop
-#------------------------------------------------------------------------------#
-createItem21:
-	addi $t1, $t1, 15840
-	li $k1, 15840
-	sw $s1, 0($t1)
-	lui $t1, 0x1000
-	j bItem
-	nop
-#------------------------------------------------------------------------------#
-createItem22:
-	addi $t1, $t1, 28636
-	li $k1, 28636
-	sw $s1, 0($t1)
-	lui $t1, 0x1000
-	j bItem
-	nop
-#------------------------------------------------------------------------------#
-createItem23:
-	addi $t1, $t1, 7092
-	li $k1, 7092
-	sw $s1, 0($t1)
-	lui $t1, 0x1000
-	j bItem
-	nop
-#------------------------------------------------------------------------------#
-createItem24:
-	addi $t1, $t1, 25824
-	li $k1, 25824
-	sw $s1, 0($t1)
-	lui $t1, 0x1000
-	j bItem
-	nop
-#------------------------------------------------------------------------------#
-createItem25:
-	addi $t1, $t1, 17960
-	li $k1, 17960
-	sw $s1, 0($t1)
-	lui $t1, 0x1000
-	j bItem
+createFirstItem:
+	addi $t2, $t2, 124	# Addres to Current item
+	lw $t4, 0($t2)		# Load CurrentItem
+	sll $s7, $t4, 2		# Multiply number of current item * 4 to get the offset
+	add $t2, $t2, $s7
+	lw $t9, 0($t2)		# Load the offset item
+	add $t1, $t1, $t9	# Get address map + offset
+	move $k1, $t9		# Pass to $k1 to check if can collision
+	sw $s1, 0($t1)		# Color the map
+	lui $t1, 0x1000		# Reset Map Adress
+	lui $t2, 0x1001
+	jr $31		       	# Return
 	nop
 
 
+createItens:
+	addi $t2, $t2, 124	# Addres to Current item
+	lw $t4, 0($t2)		# Load CurrentItem
+	sll $s7, $t4, 2		# Multiply number of current item * 4 to get the offset
+	add $t2, $t2, $s7
+	lw $t9, 0($t2)		# Load the offset item
+	add $t1, $t1, $t9	# Get address map + offset
+	move $k1, $t9		# Pass to $k1 to check if can collision
+	sw $s1, 0($t1)		# Color the map
+	lui $t1, 0x1000		# Reset Map Adress
+	lui $t2, 0x1001
+	j bItem		       	# Return
+	nop
+
+
+
+
+
+	
+Vitoria:
+	beq $t0, 32764, exit
+	nop
+		sw $s1, 0($t1)
+		addi $t1, $t1, 4  # Address +=4;
+		addi $t0, $t0, 4  # Count +=4;
+		j Vitoria
+		nop
 
 #------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
@@ -709,6 +523,8 @@ gameOver:
 		j gameOver
 		nop
 
+
+
 #------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
@@ -720,4 +536,4 @@ exit:
 #------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
-#------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------#:
