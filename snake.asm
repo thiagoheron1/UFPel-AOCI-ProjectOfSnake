@@ -13,14 +13,30 @@
 # (+512)BorderRight Pixels: 504- 32760 / 508 - 32764	                       #
 #									       #
 #------------------------------------------------------------------------------#
-#			 Registers:					      	
-# T0 - Count					
+#			 Registers:					      					
 
-# T9 - Border Collision - the values of column(left or right)
+# T0 - *Count
+# T1 - *Map Address
+# T2 - *Array Address
+# T3 - *sizeSnake
+# T4 - *currentItem
+# T5 - offsetSnake, load offsets
+# T6 - Quantity of Pixel gonna use next Moviment
+# T7 - Snake's Born(13060) / nextMoviment of Snake
+# T8 - Address of last position - 1
+# T9 - Flag /  Address of last position 
+
+
 # S0 - Black
 # S1 - White
 # S2 - Gray
 # S3 - Dark Red
+
+
+# S4 = x ( quantity of words to last position * 4)
+# S5 = Y ( quantity of words to last position -1 * 4)
+# S6 = Size flexible to put new position t8,t9...
+# S7 = offset of last position -1
 
 # sizeSnake = +0
 # offsetSnake +4...
